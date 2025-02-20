@@ -44,7 +44,7 @@ export function PokemonTable({ initialPokemons }: PokemonTableProps) {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [inView]);
 
   const pokemons = data?.pages.flat() ?? [];
 
