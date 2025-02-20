@@ -1,9 +1,5 @@
-'use client';
+"use client";
 
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
-import Image from 'next/image';
 import {
   Table,
   TableBody,
@@ -11,8 +7,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Pokemon, pokemonApi } from '@/lib/pokemon-api';
+} from "@/components/ui/table";
+
+import { useInfiniteQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { pokemonApi } from "../_services/pokemon-api";
+import { Pokemon } from "../_types/pokemon.types";
 
 interface PokemonTableProps {
   initialPokemons: Pokemon[];
@@ -23,10 +26,11 @@ export function PokemonTable({ initialPokemons }: PokemonTableProps) {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ['pokemons'],
-      queryFn: async ({ pageParam = 0 }) => {
+      queryKey: ["pokemons"],
+      queryFn: async ({ pageParam }) => {
         return pokemonApi.getPokemonBatch(pageParam, 50);
       },
+      initialPageParam: 0,
       getNextPageParam: (_, pages) => {
         return pages.length * 50;
       },
@@ -56,24 +60,32 @@ export function PokemonTable({ initialPokemons }: PokemonTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {pokemons.map((pokemon) => (
+          {pokemons.map(pokemon => (
             <TableRow key={pokemon.id}>
               <TableCell>{pokemon.id}</TableCell>
-              <TableCell className="font-medium capitalize">
-                {pokemon.name}
+              <TableCell className="font-medium">
+                <Link
+                  href={`/pokemon/${pokemon.id}`}
+                  className="text-blue-500 hover:text-blue-700 capitalize"
+                >
+                  {pokemon.name}
+                </Link>
               </TableCell>
               <TableCell>
                 {pokemon.sprites.front_default && (
-                  <Image
-                    src={pokemon.sprites.front_default}
-                    alt={pokemon.name}
-                    width={96}
-                    height={96}
-                  />
+                  <Link href={`/pokemon/${pokemon.id}`}>
+                    <Image
+                      src={pokemon.sprites.front_default}
+                      alt={pokemon.name}
+                      width={96}
+                      height={96}
+                      className="hover:scale-110 transition-transform"
+                    />
+                  </Link>
                 )}
               </TableCell>
               <TableCell>
-                {pokemon.types.map((type) => (
+                {pokemon.types.map(type => (
                   <span
                     key={type.type.name}
                     className="inline-block px-2 py-1 mr-1 rounded-full bg-gray-200 text-gray-800 text-sm capitalize"
@@ -86,10 +98,7 @@ export function PokemonTable({ initialPokemons }: PokemonTableProps) {
           ))}
         </TableBody>
       </Table>
-      <div
-        ref={ref}
-        className="flex justify-center p-4"
-      >
+      <div ref={ref} className="flex justify-center p-4">
         {isFetchingNextPage ? (
           <div>Loading more...</div>
         ) : hasNextPage ? (

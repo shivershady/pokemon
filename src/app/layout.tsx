@@ -1,10 +1,14 @@
+import "./globals.css";
+
+import { Providers } from "@/components/providers";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import "./globals.css";
-import { Providers } from "@/components/providers";
 
 const geist = Geist({
   subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: false,
+  variable: "--font-geist",
 });
 
 export const metadata: Metadata = {
@@ -18,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={geist.className}>
+    <html lang="en" className={geist.variable}>
+      <body className="font-sans antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
